@@ -81,4 +81,4 @@ Together with a dedicated it may be used as a complete self hosted server–clie
 
 ## License
 - GPL
-- most icons come from [iconmonstr](https://iconmonstr.com)
+
