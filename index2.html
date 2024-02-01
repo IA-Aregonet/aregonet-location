@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Usuarios</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        /* Estilo para el contenedor principal */
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Estilo para el mapa (ocupa todo el espacio restante) */
+        #map {
+            flex: 1;
+        }
+
+        /* Estilo para el select debajo del mapa */
+        .user-selection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
+        }
+
+        /* Estilo para el t¨ªtulo "Seleccionar usuario" */
+        .select-title {
+            font-size: 20px;
+            color: #3498db;
+            margin-bottom: 10px;
+            text-transform: uppercase; /* Convertir el texto en may¨²sculas */
+        }
+
+        /* Estilo para el select */
+        #usuarios {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            font-size: 14px;
+            background: #3498db;
+            color: #fff;
+        }
+
+        #usuarios option {
+            background: #3498db;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="user-selection">
+        <!-- T¨ªtulo "Seleccionar usuario" mejorado -->
+        <p class="select-title">Seleccionar usuario:</p>
+        <select id="usuarios">
+            <option value="" disabled selected>Seleccione un usuario</option>
+        </select>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Crear el mapa y centrarlo en Carabobo, Valencia, Venezuela
+        var map = L.map('map').setView([10.1626, -68.0073], 10); // Coordenadas de Carabobo, Valencia
+
+        // Agregar un mapa base de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Obtener datos de usuarios y posiciones desde el archivo PHP
+        fetch('obtener_usuarios.php')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                // Obtener el select
+                var select = document.getElementById('usuarios');
+
+                // Iterar sobre los datos y crear marcadores en el mapa
+                data.forEach(function (userData) {
+                    var marker = L.marker([userData.latitude, userData.longitude])
+                        .bindPopup(userData.user)
+                        .addTo(map);
+
+                    // Agregar opciones al select con los nombres de los usuarios
+                    var option = document.createElement('option');
+                    option.value = userData.user;
+                    option.text = userData.user;
+                    select.appendChild(option);
+                });
+
+                // Manejar el cambio en el select para mostrar el usuario seleccionado
+                select.addEventListener('change', function () {
+                    var selectedUser = this.value;
+                    map.eachLayer(function (layer) {
+                        if (layer instanceof L.Marker) {
+                            if (layer.getPopup().getContent() === selectedUser) {
+                                map.setView(layer.getLatLng(), 15); // Centrar el mapa en el usuario seleccionado
+                                layer.openPopup();
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(function (error) {
+                console.log('Error al obtener los datos:', error);
+            });
+    </script>
+</body>
+</html>
