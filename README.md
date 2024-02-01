@@ -66,9 +66,9 @@ Together with a dedicated it may be used as a complete self hosted server–clie
   - `docker run -d --name ulogger -p 8080:80 -p 8081:3306 --expose 3306 -e ULOGGER_ENABLE_SETUP=1 ulogger`
 - Use environment variables (or create `.env` file in `.tests/` folder) to set up connection details (below database credentials are docker defaults)
   - `DB_DSN="mysql:host=127.0.0.1;port=8081;dbname=ulogger;charset=utf8"`
-  - `DB_USER=ulogger`
+  - `DB_USER=aregonet`
   - `DB_PASS=secret2`
-  - `ULOGGER_URL="http://127.0.0.1:8080"`
+  - `URL="http://127.0.0.1:8080"`
 - PHP tests
   - `XDEBUG_MODE=coverage ./vendor/bin/phpunit -c .tests/phpunit.xml`
 - JS tests
